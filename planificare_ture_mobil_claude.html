@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Planificare ture - versiune corectată</title>
+  <style>
+    :root{
+      --bg:#0f172a; --panel:#111827; --card:#1f2937; --soft:#334155; --line:#475569;
+      --text:#e5e7eb; --muted:#94a3b8; --accent:#22c55e; --accent2:#38bdf8; --danger:#ef4444;
+      --amber:rgba(245,158,11,.14); --red:rgba(239,68,68,.14); --green:rgba(34,197,94,.14); --violet:rgba(167,139,250,.14);
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(180deg,#0b1220 0%,#111827 100%);color:var(--text)}
+    .wrap{max-width:1180px;margin:0 auto;padding:10px 8px 28px}
+    .topbar{position:sticky;top:0;z-index:50;background:rgba(15,23,42,.95);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);padding:8px}
+    .topbar-inner{max-width:1180px;margin:0 auto;display:flex;gap:6px;flex-wrap:wrap}
+    .panel,.card,.team-block,.status-block{background:rgba(31,41,55,.96);border:1px solid var(--line);border-radius:14px;box-shadow:0 8px 20px rgba(0,0,0,.18)}
+    .panel,.card{padding:10px;margin-bottom:10px}
+    h1,h2,h3,h4{margin:0 0 8px;line-height:1.15}
+    h1{font-size:22px} h2{font-size:17px} h3{font-size:15px} h4{font-size:13px}
+    .sub{color:var(--muted);font-size:12px;margin-bottom:10px}
+    .grid{display:grid;gap:8px}
+    .grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .grid-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+    @media (max-width:820px){.grid-2,.grid-3,.grid-4{grid-template-columns:1fr}.wrap{padding:8px 6px 24px}}
+
+    /* ===== OPTIMIZARE MOBIL ===== */
+    @media (max-width:600px){
+      /* Topbar — scroll orizontal, fără wrap */
+      .topbar{padding:6px 6px 0}
+      .topbar-inner{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:6px;gap:5px;scrollbar-width:none}
+      .topbar-inner::-webkit-scrollbar{display:none}
+      .topbar-inner button{flex-shrink:0;white-space:nowrap;font-size:11px;padding:6px 9px;min-height:36px}
+
+      /* Touch targets mai mari */
+      button{min-height:44px;padding:10px 12px}
+      input,select,textarea{min-height:44px}
+
+      /* Fix iOS zoom (< 16px cauzează zoom automat) */
+      input,select,textarea{font-size:16px!important}
+      .plan-select{font-size:14px!important;padding:6px 3px}
+
+      /* Tipografie și layout general */
+      h1{font-size:17px} h2{font-size:14px} h3{font-size:13px} h4{font-size:12px}
+      .wrap{padding:6px 4px 20px}
+      .panel,.card{padding:8px}
+      .panel .sub{font-size:11px}
+      .badge{font-size:10px;padding:3px 6px}
+      .card-title{gap:6px}
+
+      /* Tabel Card 1 — coloane mai compacte */
+      .name-col,.name-head{min-width:100px;width:100px}
+      .day-col{width:60px;min-width:60px}
+
+      /* Activity rows — stivuire pe 2 coloane pe mobil */
+      .activity-header{display:none}
+      .activity-row{
+        grid-template-columns:1fr 1fr;
+        gap:5px;
+        padding:8px;
+        border-radius:10px;
+        border:1px solid var(--soft);
+      }
+      .activity-row .team-label{
+        grid-column:1/-1;
+        font-size:11px;
+        color:var(--muted);
+        font-weight:700;
+        text-transform:uppercase;
+        letter-spacing:.3px;
+        min-height:unset!important;
+        padding:0!important;
+      }
+      .activity-row .act-type{grid-column:1/-1}
+      .activity-row .remove-activity-btn{
+        grid-column:1/-1;
+        min-height:40px;
+      }
+
+      /* Status chips */
+      .chip{font-size:11px;padding:4px 7px}
+
+      /* Team block */
+      .team-head{flex-direction:column;align-items:flex-start;gap:6px}
+      .team-head .btn-primary{width:100%;text-align:center}
+    }
+    label{display:block;font-size:11px;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.3px;font-weight:700}
+    input,select,textarea{
+      width:100%; min-height:38px; background:#0f172a; border:1px solid var(--soft); color:var(--text);
+      border-radius:10px; padding:8px 10px; font-size:14px; outline:none;
+    }
+    input:focus,select:focus,textarea:focus{border-color:var(--accent2);box-shadow:0 0 0 3px rgba(56,189,248,.15)}
+    textarea{min-height:76px;resize:vertical}
+    button{appearance:none;border:0;border-radius:10px;min-height:38px;padding:8px 12px;font-size:13px;font-weight:700;cursor:pointer}
+    .btn-primary{background:var(--accent);color:#052e16}
+    .btn-secondary{background:#0f172a;color:var(--text);border:1px solid var(--soft)}
+    .btn-info{background:var(--accent2);color:#082f49}
+    .btn-danger{background:rgba(239,68,68,.14);color:#fecaca;border:1px solid rgba(239,68,68,.35)}
+    .hidden{display:none}
+    .card-title{display:flex;align-items:center;justify-content:space-between;gap:8px;border-bottom:1px solid var(--line);padding-bottom:8px;margin-bottom:10px}
+    .badge{display:inline-flex;align-items:center;background:rgba(56,189,248,.12);color:#bae6fd;border:1px solid rgba(56,189,248,.35);padding:4px 8px;border-radius:999px;font-size:11px;font-weight:700}
+    .table-wrap{overflow:auto;border-radius:12px}
+    table{width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed}
+    th,td{border:1px solid var(--soft);padding:4px;text-align:center;vertical-align:middle}
+    th{background:#0f172a}
+    .plan-select{font-size:11px;padding:4px 3px;min-height:32px}
+    .day-col{width:74px;min-width:74px}
+    .name-col{position:sticky;left:0;z-index:2;background:#111827;min-width:132px;width:132px;text-align:left;padding-left:8px}
+    .name-head{position:sticky;left:0;z-index:3;background:#0f172a;min-width:132px;width:132px;text-align:left;padding-left:8px}
+    .team-block{padding:8px;margin-bottom:8px}
+    .team-head{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+    .team-members{padding:8px;border-radius:10px;background:#0f172a;border:1px solid var(--soft);font-size:13px;margin-bottom:8px}
+    .activity-row{display:grid;grid-template-columns:92px 1fr 64px 64px 64px auto;gap:6px;align-items:center;padding:6px;border-radius:10px;background:rgba(15,23,42,.72);margin-bottom:6px}
+    .activity-row .mini{min-height:34px;font-size:12px;padding:6px}
+    .activity-header{display:grid;grid-template-columns:92px 1fr 64px 64px 64px auto;gap:6px;font-size:11px;color:var(--muted);padding:0 6px 4px}
+    .status-grid{display:grid;gap:8px}
+    .status-s{background:var(--amber)}
+    .status-o{background:var(--red)}
+    .status-co{background:var(--green)}
+    .status-1i{background:var(--violet)}
+    .chip{display:inline-block;margin:4px 5px 0 0;padding:5px 8px;border-radius:999px;background:#0f172a;border:1px solid var(--soft);font-size:12px}
+    @media print{
+      .topbar{display:none!important}
+      body{background:#fff;color:#000}
+      .panel,.card,.team-block,.status-block,input,select,textarea{background:#fff!important;color:#000!important;border-color:#888!important;box-shadow:none!important}
+      th,td,.name-col,.name-head{color:#000!important;background:#fff!important}
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="topbar-inner">
+      <button class="btn-secondary" id="showCard1Btn" type="button">Card 1 - Alocare</button>
+      <button class="btn-secondary" id="showCard2Btn" type="button">Card 2 - Planificare</button>
+      <button class="btn-secondary" id="showCard3Btn" type="button">Card 3 - Activități</button>
+      <button class="btn-info" id="printBtn" type="button">Tipărește / Salvează PDF</button>
+      <button class="btn-danger" id="resetBtn" type="button">Resetează</button>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="panel">
+      <h1>Planificare ture</h1>
+      <div class="sub">Varianta bazată pe primul HTML mare, cu modificările cerute: auto alocat la echipă, coloană sticky la planificare, activitate + oră început + oră sfârșit pe același rând.</div>
+    </div>
+
+    <div class="card" id="card1">
+      <div class="card-title">
+        <h2>Card 1 - Alocare</h2>
+        <span class="badge">Personal + auto</span>
+      </div>
+
+      <div class="grid grid-3">
+        <div>
+          <label for="detasament">Detașament</label>
+          <select id="detasament">
+            <option value="">Selectează</option>
+            <option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option>
+          </select>
+        </div>
+        <div>
+          <label for="dataReferinta">Data de referință</label>
+          <input id="dataReferinta" type="date">
+        </div>
+        <div>
+          <label for="nrAutos">Număr autospeciale</label>
+          <input id="nrAutos" type="number" min="0" max="20" value="5">
+        </div>
+      </div>
+
+      <div class="grid grid-4" style="margin-top:10px">
+        <div>
+          <label for="personNumber">Număr</label>
+          <input id="personNumber" type="number" min="1" max="28" placeholder="1-28">
+        </div>
+        <div>
+          <label for="personLastName">Nume</label>
+          <input id="personLastName" type="text" placeholder="Popescu">
+        </div>
+        <div>
+          <label for="personFirstName">Prenume</label>
+          <input id="personFirstName" type="text" placeholder="Ion">
+        </div>
+        <div style="display:flex;align-items:end">
+          <button class="btn-primary" id="addPersonBtn" type="button" style="width:100%">+ Adaugă</button>
+        </div>
+      </div>
+
+      <div style="margin-top:10px" class="table-wrap">
+        <table>
+          <thead>
+            <tr><th style="width:70px">Nr.</th><th>Nume</th><th>Prenume</th><th style="width:90px">Acțiune</th></tr>
+          </thead>
+          <tbody id="personListBody"></tbody>
+        </table>
+      </div>
+
+      <div class="sub" style="margin-top:10px">Introdu numărul fiecărei mașini și alocă echipa: e1-e5 sau E1-E5.</div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th style="width:70px">Auto</th><th>Nr. mașină</th><th style="width:110px">Echipă alocată</th></tr>
+          </thead>
+          <tbody id="autosBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card hidden" id="card2">
+      <div class="card-title">
+        <h2>Card 2 - Planificare</h2>
+        <span class="badge">7 zile</span>
+      </div>
+      <div class="sub">Coloana cu nume și prenume rămâne vizibilă la derulare. Selectoarele sunt reduse ca să încapă mai bine pe ecran.</div>
+      <div class="table-wrap">
+        <table id="planningTable">
+          <thead id="planningHead"></thead>
+          <tbody id="planningBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card hidden" id="card3">
+      <div class="card-title">
+        <h2>Card 3 - Planificare activități</h2>
+        <span class="badge">Pe data selectată</span>
+      </div>
+
+      <div class="grid grid-3">
+        <div>
+          <label for="activityDateSelect">Data</label>
+          <select id="activityDateSelect"></select>
+        </div>
+        <div>
+          <label>Detașament</label>
+          <div class="panel" id="detSummary" style="padding:8px">-</div>
+        </div>
+        <div>
+          <label>Autospeciale</label>
+          <div class="panel" id="autoSummary" style="padding:8px;white-space:pre-wrap">-</div>
+        </div>
+      </div>
+
+      <div style="margin-top:10px">
+        <h3>Echipe și activități</h3>
+        <div id="teamsByDateContainer"></div>
+      </div>
+
+      <div style="margin-top:10px">
+        <h3>Situații finale</h3>
+        <div class="status-grid" id="footerGroups"></div>
+      </div>
+    </div>
+  </div>
+
+  <template id="teamBlockTemplate">
+    <div class="team-block">
+      <div class="team-head">
+        <div>
+          <h3 class="team-name"></h3>
+          <div class="sub team-type" style="margin:0"></div>
+        </div>
+        <button class="btn-primary add-activity-btn" type="button">+ Adaugă activitate</button>
+      </div>
+      <div class="team-members"></div>
+      <div class="activity-header">
+        <div>Echipă/auto</div><div>Activitate</div><div>Începe</div><div>Termină</div><div>Mis.</div><div></div>
+      </div>
+      <div class="activity-list"></div>
+    </div>
+  </template>
+
+  <template id="activityTemplate">
+    <div class="activity-row">
+      <div class="mini team-label"></div>
+      <select class="mini act-type">
+        <option value="">Selectează</option>
+        <option value="Preg fiz">Preg fiz</option>
+        <option value="Trag">Trag</option>
+        <option value="Tactică">Tactică</option>
+        <option value="Rez int">Rez int</option>
+        <option value="Rez teren">Rez teren</option>
+        <option value="Mis.">Mis.</option>
+      </select>
+      <input class="mini act-start" type="number" min="0" max="23" placeholder="08">
+      <input class="mini act-end" type="number" min="0" max="23" placeholder="12">
+      <input class="mini act-extra" type="text" maxlength="4" placeholder="abcd">
+      <button class="btn-danger remove-activity-btn" type="button">Șterge</button>
+    </div>
+  </template>
+
+  <script>
+    const people = [];
+    const planning = {};
+    const teamActivities = {};
+    const autos = {};
+    const planCodes = ['e1','e2','e3','e4','e5','E1','E2','E3','E4','E5','P1','P2','P3','P4','P5','S1','S2','O1','O2','1I','CO'];
+
+    const card1 = document.getElementById('card1');
+    const card2 = document.getElementById('card2');
+    const card3 = document.getElementById('card3');
+    const planningHead = document.getElementById('planningHead');
+    const planningBody = document.getElementById('planningBody');
+    const personListBody = document.getElementById('personListBody');
+    const autosBody = document.getElementById('autosBody');
+    const activityDateSelect = document.getElementById('activityDateSelect');
+    const teamsByDateContainer = document.getElementById('teamsByDateContainer');
+    const footerGroups = document.getElementById('footerGroups');
+    const detSummary = document.getElementById('detSummary');
+    const autoSummary = document.getElementById('autoSummary');
+
+    function formatDate(date){
+      const y = date.getFullYear();
+      const m = String(date.getMonth()+1).padStart(2,'0');
+      const d = String(date.getDate()).padStart(2,'0');
+      return `${y}-${m}-${d}`;
+    }
+
+    function labelDate(iso){
+      const [y,m,d] = iso.split('-');
+      return `${d}.${m}.${y}`;
+    }
+
+    function getWindowDates(){
+      const baseValue = document.getElementById('dataReferinta').value;
+      const base = baseValue ? new Date(baseValue + 'T12:00:00') : new Date();
+      const arr = [];
+      for(let i=-1;i<=5;i++){
+        const dt = new Date(base);
+        dt.setDate(base.getDate()+i);
+        arr.push(formatDate(dt));
+      }
+      return arr;
+    }
+
+    function showCard(n){
+      card1.classList.toggle('hidden', n !== 1);
+      card2.classList.toggle('hidden', n !== 2);
+      card3.classList.toggle('hidden', n !== 3);
+    }
+
+    function initDefaults(){
+      document.getElementById('dataReferinta').value = formatDate(new Date());
+      document.getElementById('detasament').value = '1';
+      buildAutosTable();
+      renderPeopleList();
+      buildPlanningTable();
+      buildActivityDateOptions();
+      renderCard3();
+    }
+
+    function buildAutosTable(){
+      const count = Math.max(0, Math.min(20, Number(document.getElementById('nrAutos').value) || 0));
+      autosBody.innerHTML = '';
+      for(let i=1;i<=count;i++){
+        if(!autos[i]) autos[i] = {nr:'', team:''};
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>M${i}</td>
+          <td><input type="text" value="${autos[i].nr || ''}" placeholder="Nr. auto ${i}"></td>
+          <td>
+            <select>
+              <option value=""></option>
+              ${['e1','e2','e3','e4','e5','E1','E2','E3','E4','E5'].map(code => `<option value="${code}" ${autos[i].team===code ? 'selected' : ''}>${code}</option>`).join('')}
+            </select>
+          </td>
+        `;
+        tr.querySelector('input').addEventListener('input', e => {
+          autos[i].nr = e.target.value.trim();
+          updateAutoSummary();
+          renderCard3();
+        });
+        tr.querySelector('select').addEventListener('change', e => {
+          autos[i].team = e.target.value;
+          updateAutoSummary();
+          renderCard3();
+        });
+        autosBody.appendChild(tr);
+      }
+      updateAutoSummary();
+    }
+
+    function getAutosList(){
+      return Object.entries(autos).map(([idx, data]) => ({
+        idx: Number(idx),
+        nr: data.nr || '',
+        team: data.team || ''
+      })).filter(x => x.nr || x.team);
+    }
+
+    function updateAutoSummary(){
+      const list = getAutosList();
+      autoSummary.textContent = list.length ? list.map(a => `M${a.idx}: ${a.nr || '-'}${a.team ? ' → ' + a.team : ''}`).join('\n') : '-';
+    }
+
+    function renderPeopleList(){
+      personListBody.innerHTML = '';
+      [...people].sort((a,b) => a.number - b.number).forEach(person => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${person.number}</td>
+          <td>${person.lastName}</td>
+          <td>${person.firstName}</td>
+          <td></td>
+        `;
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'btn-danger';
+        btn.textContent = 'Șterge';
+        btn.addEventListener('click', () => {
+          const idx = people.findIndex(p => p.number === person.number);
+          if(idx >= 0) people.splice(idx,1);
+          delete planning[person.number];
+          renderPeopleList();
+          buildPlanningTable();
+          renderCard3();
+        });
+        tr.children[3].appendChild(btn);
+        personListBody.appendChild(tr);
+      });
+    }
+
+    function addPerson(){
+      const number = Number(document.getElementById('personNumber').value);
+      const lastName = document.getElementById('personLastName').value.trim();
+      const firstName = document.getElementById('personFirstName').value.trim();
+      if(!number || number < 1 || number > 28){ alert('Numărul trebuie să fie între 1 și 28.'); return; }
+      if(!lastName || !firstName){ alert('Completează nume și prenume.'); return; }
+      if(people.some(p => p.number === number)){ alert('Există deja acest număr.'); return; }
+
+      people.push({number, lastName, firstName});
+      document.getElementById('personNumber').value = '';
+      document.getElementById('personLastName').value = '';
+      document.getElementById('personFirstName').value = '';
+      renderPeopleList();
+      buildPlanningTable();
+      renderCard3();
+    }
+
+    function ensurePlanningSlots(){
+      const dates = getWindowDates();
+      people.forEach(person => {
+        if(!planning[person.number]) planning[person.number] = {};
+        dates.forEach(dt => {
+          if(planning[person.number][dt] === undefined) planning[person.number][dt] = '';
+        });
+      });
+    }
+
+    function buildPlanningTable(){
+      ensurePlanningSlots();
+      const dates = getWindowDates();
+      planningHead.innerHTML = '';
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<th style="width:56px">Nr.</th><th class="name-head">Nume<br>Prenume</th>` + dates.map(dt => `<th class="day-col">${labelDate(dt)}</th>`).join('');
+      planningHead.appendChild(tr);
+
+      planningBody.innerHTML = '';
+      [...people].sort((a,b)=>a.number-b.number).forEach(person => {
+        const row = document.createElement('tr');
+        row.innerHTML = `<td>${person.number}</td><td class="name-col"><strong>${person.lastName}</strong><br><span style="font-size:11px;color:#cbd5e1">${person.firstName}</span></td>`;
+        dates.forEach(dt => {
+          const td = document.createElement('td');
+          td.className = 'day-col';
+          const select = document.createElement('select');
+          select.className = 'plan-select';
+          select.innerHTML = `<option value=""></option>` + planCodes.map(code => `<option value="${code}" ${planning[person.number][dt]===code ? 'selected' : ''}>${code}</option>`).join('');
+          select.addEventListener('change', e => {
+            planning[person.number][dt] = e.target.value;
+            renderCard3();
+          });
+          td.appendChild(select);
+          row.appendChild(td);
+        });
+        planningBody.appendChild(row);
+      });
+
+      buildActivityDateOptions();
+      renderCard3();
+    }
+
+    function buildActivityDateOptions(){
+      const dates = getWindowDates();
+      const current = activityDateSelect.value;
+      activityDateSelect.innerHTML = dates.map(dt => `<option value="${dt}">${labelDate(dt)}</option>`).join('');
+      activityDateSelect.value = dates.includes(current) ? current : dates[1];
+    }
+
+    function getPeopleForCode(date, code){
+      return [...people].filter(person => planning[person.number]?.[date] === code).sort((a,b)=>a.number-b.number);
+    }
+
+    function getTeamCodesForDate(date){
+      const result = [];
+      ['e1','e2','e3','e4','e5','E1','E2','E3','E4','E5','P1','P2','P3','P4','P5'].forEach(code => {
+        if(getPeopleForCode(date, code).length) result.push(code);
+      });
+      return result;
+    }
+
+    function getActivityKey(date, code){
+      return `${date}__${code}`;
+    }
+
+    function getAutoNrForTeam(teamCode){
+      const found = Object.values(autos).find(a => a.team === teamCode && a.nr);
+      return found ? found.nr : '';
+    }
+
+    function saveActivitiesFor(date, code, listEl){
+      const key = getActivityKey(date, code);
+      teamActivities[key] = [...listEl.querySelectorAll('.activity-row')].map(row => ({
+        type: row.querySelector('.act-type').value,
+        start: row.querySelector('.act-start').value,
+        end: row.querySelector('.act-end').value,
+        extra: row.querySelector('.act-extra').value.trim().slice(0,4)
+      })).filter(x => x.type || x.start || x.end || x.extra);
+    }
+
+    function addActivityRow(listEl, date, code, activity = null){
+      const node = document.getElementById('activityTemplate').content.firstElementChild.cloneNode(true);
+      const autoNr = getAutoNrForTeam(code);
+      node.querySelector('.team-label').textContent = autoNr ? `${code} / ${autoNr}` : code;
+      const typeSel = node.querySelector('.act-type');
+      const startInp = node.querySelector('.act-start');
+      const endInp = node.querySelector('.act-end');
+      const extraInp = node.querySelector('.act-extra');
+
+      if(activity){
+        typeSel.value = activity.type || '';
+        startInp.value = activity.start || '';
+        endInp.value = activity.end || '';
+        extraInp.value = activity.extra || '';
+      }
+
+      [typeSel,startInp,endInp,extraInp].forEach(el => el.addEventListener('change', () => saveActivitiesFor(date, code, listEl)));
+      node.querySelector('.remove-activity-btn').addEventListener('click', () => {
+        node.remove();
+        saveActivitiesFor(date, code, listEl);
+      });
+
+      listEl.appendChild(node);
+      saveActivitiesFor(date, code, listEl);
+    }
+
+    function renderStatusBlock(title, className, list){
+      const block = document.createElement('div');
+      block.className = `status-block ${className}`;
+      block.style.padding = '10px';
+      block.innerHTML = `<h4>${title}</h4>`;
+      if(list.length){
+        list.forEach(person => {
+          const chip = document.createElement('span');
+          chip.className = 'chip';
+          chip.textContent = `${person.number}. ${person.lastName} ${person.firstName}`;
+          block.appendChild(chip);
+        });
+      } else {
+        const none = document.createElement('div');
+        none.className = 'sub';
+        none.style.margin = '0';
+        none.textContent = 'Nu există.';
+        block.appendChild(none);
+      }
+      footerGroups.appendChild(block);
+    }
+
+    function renderCard3(){
+      const date = activityDateSelect.value || getWindowDates()[1];
+      detSummary.textContent = document.getElementById('detasament').value ? `Detașament ${document.getElementById('detasament').value}` : '-';
+      updateAutoSummary();
+      teamsByDateContainer.innerHTML = '';
+      footerGroups.innerHTML = '';
+
+      const teamCodes = getTeamCodesForDate(date);
+      teamCodes.forEach(code => {
+        const block = document.getElementById('teamBlockTemplate').content.firstElementChild.cloneNode(true);
+        const members = getPeopleForCode(date, code);
+        const autoNr = getAutoNrForTeam(code);
+        block.querySelector('.team-name').textContent = autoNr ? `${code} / ${autoNr}` : code;
+        let tip = 'Patrulare';
+        if(code.startsWith('e')) tip = 'Schimb zi';
+        else if(code.startsWith('E')) tip = 'Schimb noapte';
+        else if(code.startsWith('P')) tip = 'Pregătire';
+        block.querySelector('.team-type').textContent = tip;
+        block.querySelector('.team-members').textContent = members.map(p => `${p.number}. ${p.lastName} ${p.firstName}`).join(', ');
+
+        const listEl = block.querySelector('.activity-list');
+        const saved = teamActivities[getActivityKey(date, code)] || [];
+        if(saved.length){
+          saved.forEach(activity => addActivityRow(listEl, date, code, activity));
+        }
+
+        block.querySelector('.add-activity-btn').addEventListener('click', () => addActivityRow(listEl, date, code));
+        teamsByDateContainer.appendChild(block);
+      });
+
+      renderStatusBlock('S', 'status-s', [...getPeopleForCode(date,'S1'), ...getPeopleForCode(date,'S2')]);
+      renderStatusBlock('O', 'status-o', [...getPeopleForCode(date,'O1'), ...getPeopleForCode(date,'O2')]);
+      renderStatusBlock('CO', 'status-co', getPeopleForCode(date,'CO'));
+      renderStatusBlock('1I', 'status-1i', getPeopleForCode(date,'1I'));
+    }
+
+    function resetAll(){
+      if(!confirm('Resetezi tot formularul?')) return;
+      people.length = 0;
+      Object.keys(planning).forEach(k => delete planning[k]);
+      Object.keys(teamActivities).forEach(k => delete teamActivities[k]);
+      Object.keys(autos).forEach(k => delete autos[k]);
+      document.getElementById('personNumber').value = '';
+      document.getElementById('personLastName').value = '';
+      document.getElementById('personFirstName').value = '';
+      initDefaults();
+      showCard(1);
+    }
+
+    document.getElementById('showCard1Btn').addEventListener('click', () => showCard(1));
+    document.getElementById('showCard2Btn').addEventListener('click', () => showCard(2));
+    document.getElementById('showCard3Btn').addEventListener('click', () => showCard(3));
+    document.getElementById('printBtn').addEventListener('click', () => window.print());
+    document.getElementById('resetBtn').addEventListener('click', resetAll);
+    document.getElementById('addPersonBtn').addEventListener('click', addPerson);
+    document.getElementById('nrAutos').addEventListener('change', () => { buildAutosTable(); renderCard3(); });
+    document.getElementById('dataReferinta').addEventListener('change', () => { buildPlanningTable(); buildActivityDateOptions(); renderCard3(); });
+    document.getElementById('detasament').addEventListener('change', renderCard3);
+    activityDateSelect.addEventListener('change', renderCard3);
+
+    initDefaults();
+    showCard(1);
+  </script>
+</body>
+</html>
