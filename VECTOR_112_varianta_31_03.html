@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>VECTOR 112 – varianta finală</title>
+<style>
+:root{
+  --bg:#0b0d10; --panel:#151922; --panel2:#1c2230; --panel3:#232b3b;
+  --text:#f5f7fb; --muted:#b5bfcd; --border:#364055;
+  --red:#ff3b30; --orange:#ff9500; --yellow:#ffd60a; --green:#32d74b; --blue:#3b82f6;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif}
+body{padding-bottom:78px}
+.header{position:sticky;top:0;z-index:30;background:rgba(11,13,16,.98);border-bottom:1px solid var(--border);padding:6px 10px 8px}
+.header-top{font-size:11px;color:var(--muted);text-transform:lowercase}
+.header-title{font-size:20px;font-weight:900;line-height:1.1;margin-top:2px}
+.container{padding:10px}
+.screen{display:none}
+.screen.active{display:block}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:10px;margin-bottom:10px}
+.card h3{margin:0 0 8px 0;font-size:15px;letter-spacing:.02em}
+.label{font-size:12px;color:var(--muted);margin:0 0 6px 0;text-transform:uppercase;font-weight:700}
+.group{margin-bottom:10px}
+.btn-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.btn-grid.three{grid-template-columns:1fr 1fr 1fr}
+.btn{
+  min-height:46px;padding:8px 10px;border-radius:10px;border:1px solid var(--border);
+  background:var(--panel2);color:var(--text);font-size:14px;font-weight:700;text-align:center;
+  display:flex;align-items:center;justify-content:center;cursor:pointer
+}
+.btn.active{background:#1f3a68;border-color:#5aa0ff;box-shadow:0 0 0 1px rgba(90,160,255,.2) inset}
+.btn-main{width:100%;min-height:54px;border:none;border-radius:12px;background:var(--red);color:white;font-size:16px;font-weight:900;letter-spacing:.03em}
+.btn-secondary{width:100%;min-height:46px;border:1px solid var(--border);border-radius:12px;background:var(--panel2);color:white;font-size:14px;font-weight:800}
+.hidden{display:none}
+.result-big{font-size:28px;font-weight:900;text-align:center;padding:10px 6px;border-radius:12px;margin-bottom:8px;border:1px solid var(--border);background:var(--panel2)}
+.result-big.scazut{color:var(--green)}
+.result-big.mediu{color:var(--yellow)}
+.result-big.ridicat{color:var(--orange)}
+.result-big.maxim{color:var(--red)}
+.subline{font-size:16px;font-weight:800;text-align:center;margin-bottom:8px}
+.alert{padding:10px;border-radius:12px;border:1px solid #6b1f1f;background:#2a1313;color:#ffd7d3;font-size:15px;font-weight:800}
+.list{display:flex;flex-direction:column;gap:6px}
+.item{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:10px;font-size:14px;font-weight:700}
+.item.active{border-color:#61a5ff}
+.item.strong{border-color:#ff8a00}
+.section-title{font-size:13px;text-transform:uppercase;color:var(--muted);font-weight:800;margin:2px 0 8px}
+.small{font-size:12px;color:var(--muted)}
+.role-tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px}
+.role-tab{min-height:38px;border:1px solid var(--border);border-radius:10px;background:var(--panel2);color:var(--text);font-size:12px;font-weight:900;padding:6px 8px}
+.role-tab.active{background:#4b2d00;border-color:#ffb347;color:#fff}
+.role-panel{display:none}
+.role-panel.active{display:block}
+.nav{position:fixed;left:0;right:0;bottom:0;display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;background:rgba(11,13,16,.98);border-top:1px solid var(--border);padding:8px 10px;z-index:35}
+.nav button{min-height:44px;border:1px solid var(--border);border-radius:10px;background:var(--panel2);color:var(--text);font-size:13px;font-weight:900}
+.nav button.active{background:#13284a;border-color:#5aa0ff}
+.history-row{padding:8px 0;border-bottom:1px solid #263042;font-size:13px}
+.history-row:last-child{border-bottom:none}
+.badge{display:inline-block;padding:4px 8px;border-radius:999px;background:var(--panel3);border:1px solid var(--border);font-size:12px;font-weight:800;margin-right:4px;margin-bottom:4px}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">aplicație în test</div>
+  <div class="header-title">EVALUARE INIȚIALĂ</div>
+</div>
+
+<div class="container">
+  <section class="screen active" id="screen-evaluare">
+    <div class="card">
+      <h3>AMENINȚARE</h3>
+      <div class="group"><div class="label">Stare comportamentală</div><div class="btn-grid" data-group="stare">
+        <button class="btn" data-value="cooperant">Cooperant</button><button class="btn" data-value="tensionat">Tensionat</button><button class="btn" data-value="agresiv">Agresiv</button><button class="btn" data-value="incoerent">Incoerent</button>
+      </div></div>
+      <div class="group"><div class="label">Suicidar</div><div class="btn-grid three" data-group="suicidar">
+        <button class="btn" data-value="nu">Nu</button><button class="btn" data-value="declarat">Declarat</button><button class="btn" data-value="iminent">Iminent</button>
+      </div></div>
+      <div class="group"><div class="label">Agresiv față de alții</div><div class="btn-grid three" data-group="agresiv">
+        <button class="btn" data-value="nu">Nu</button><button class="btn" data-value="verbal">Verbal</button><button class="btn" data-value="fizic">Fizic</button>
+      </div></div>
+      <div class="group"><div class="label">Act iminent (gest grav)</div><div class="btn-grid" data-group="actIminent">
+        <button class="btn" data-value="nu">Nu</button><button class="btn" data-value="da">Da</button>
+      </div></div>
+    </div>
+
+    <div class="card">
+      <h3>ARMAMENT</h3>
+      <div class="group"><div class="label">Prezență armă</div><div class="btn-grid three" data-group="arma">
+        <button class="btn" data-value="nu">Nu</button><button class="btn" data-value="posibil">Posibil</button><button class="btn" data-value="confirmat">Confirmat</button>
+      </div></div>
+      <div class="group hidden" id="tipArmaWrap"><div class="label">Tip armă</div><div class="btn-grid" data-group="tipArma">
+        <button class="btn" data-value="foc">Armă de foc</button><button class="btn" data-value="alba">Armă albă</button><button class="btn" data-value="taietor">Obiect tăietor</button><button class="btn" data-value="contondent">Obiect contondent</button><button class="btn" data-value="necunoscut">Necunoscut</button>
+      </div></div>
+      <div class="group"><div class="label">Acces la armă</div><div class="btn-grid three" data-group="accesArma">
+        <button class="btn" data-value="nu">Nu</button><button class="btn" data-value="posibil">Posibil</button><button class="btn" data-value="imediat">Imediat</button>
+      </div></div>
+      <div class="group"><div class="label">Utilizare armă</div><div class="btn-grid three" data-group="utilizareArma">
+        <button class="btn" data-value="nu">Nu</button><button class="btn" data-value="ameninta">Amenință</button><button class="btn" data-value="folosita">Folosită</button>
+      </div></div>
+    </div>
+
+    <div class="card">
+      <h3>PERSOANE ÎN PERICOL</h3>
+      <div class="group"><div class="btn-grid" data-group="persoane">
+        <button class="btn" data-value="nu">Nu</button><button class="btn" data-value="victime">Victime</button><button class="btn" data-value="ostatici">Ostatici</button><button class="btn" data-value="vulnerabile">Persoane vulnerabile</button>
+      </div></div>
+    </div>
+
+    <div class="card">
+      <h3>CONTEXT</h3>
+      <div class="group"><div class="label">Baricadat</div><div class="btn-grid" data-group="baricadat">
+        <button class="btn" data-value="nu">Nu</button><button class="btn" data-value="da">Da</button>
+      </div></div>
+      <div class="group"><div class="label">Acces</div><div class="btn-grid three" data-group="acces">
+        <button class="btn" data-value="facil">Facil</button><button class="btn" data-value="dificil">Dificil</button><button class="btn" data-value="blocat">Blocat</button>
+      </div></div>
+      <div class="group"><div class="label">Subiect</div><div class="btn-grid" data-group="subiect">
+        <button class="btn" data-value="fix">Fix</button><button class="btn" data-value="deplasare">În deplasare</button>
+      </div></div>
+      <div class="group"><div class="label">Mediu periculos</div><div class="btn-grid" data-group="mediu">
+        <button class="btn multi" data-value="incendiu">Incendiu</button><button class="btn multi" data-value="explozie">Explozie</button><button class="btn multi" data-value="inaltime">Înălțime</button><button class="btn multi" data-value="apa">Apă</button><button class="btn multi" data-value="cbrne">CBRN(e)</button>
+      </div></div>
+      <div class="group"><div class="label">Mulțime</div><div class="btn-grid three" data-group="multime">
+        <button class="btn" data-value="nu">Nu</button><button class="btn" data-value="prezenta">Prezentă</button><button class="btn" data-value="crestere">În creștere</button>
+      </div></div>
+      <div class="group"><div class="label">Perimetru</div><div class="btn-grid three" data-group="perimetru">
+        <button class="btn" data-value="controlat">Controlat</button><button class="btn" data-value="dificil">Dificil</button><button class="btn" data-value="pierdut">Pierdut</button>
+      </div></div>
+    </div>
+
+    <div class="card">
+      <h3>DINAMICĂ</h3>
+      <div class="group"><div class="label">Evoluția evenimentului</div><div class="btn-grid" data-group="evolutie">
+        <button class="btn" data-value="stabil">Stabil</button><button class="btn" data-value="escaladare">În escaladare</button>
+      </div></div>
+      <div class="group"><div class="label">Comunicarea cu subiectul</div><div class="btn-grid three" data-group="comunicare">
+        <button class="btn" data-value="buna">Bună</button><button class="btn" data-value="limitata">Limitată</button><button class="btn" data-value="pierduta">Pierdută</button>
+      </div></div>
+      <div class="group"><div class="label">Urgența răspunsului</div><div class="btn-grid three" data-group="urgenta">
+        <button class="btn" data-value="redusa">Redusă</button><button class="btn" data-value="crescuta">Crescută</button><button class="btn" data-value="imediata">Imediată</button>
+      </div></div>
+    </div>
+
+    <button class="btn-main" id="genereazaBtn">GENEREAZĂ RISC</button>
+    <div style="height:10px"></div>
+    <button class="btn-secondary" id="resetBtn">Reset formular</button>
+  </section>
+
+  <section class="screen" id="screen-risc">
+    <div class="card">
+      <div class="result-big" id="competentaValue">COMPETENȚĂ: -</div>
+      <div class="result-big" id="riskValue">RISC: -</div>
+      <div class="subline" id="posturaValue">POSTURĂ: -</div>
+      <div class="alert" id="alertValue">Completează evaluarea și generează riscul.</div>
+    </div>
+    <div class="card"><div class="section-title">Structuri implicate</div><div class="list" id="forteList"></div></div>
+    <div class="card"><div class="section-title">Măsuri</div><div class="list" id="masuriList"></div></div>
+    <div class="card"><div class="section-title">Istoric local</div><div id="istoricWrap" class="small">Nu există intervenții salvate.</div><div style="height:8px"></div><button class="btn-secondary" id="stergeIstoricBtn">Șterge istoric</button></div>
+  </section>
+
+  <section class="screen" id="screen-dispozitiv">
+    <div class="card"><h3>DISPOZITIV OPERAȚIONAL</h3><div class="small">Apar doar structurile implicate.</div></div>
+    <div class="card"><div class="role-tabs" id="roleTabs"></div><div id="rolePanels"></div></div>
+  </section>
+</div>
+
+<div class="nav">
+  <button class="active" data-screen="evaluare">Evaluare</button>
+  <button data-screen="risc">Risc</button>
+  <button data-screen="dispozitiv">Dispozitiv</button>
+</div>
+
+<script>
+const state = {stare:'', suicidar:'', agresiv:'', actIminent:'nu', arma:'', tipArma:'', accesArma:'', utilizareArma:'', persoane:'', baricadat:'', acces:'', subiect:'', multime:'', perimetru:'', evolutie:'', comunicare:'', urgenta:'', mediu:[]};
+const defaults = {stare:'cooperant', suicidar:'nu', agresiv:'nu', actIminent:'nu', arma:'nu', tipArma:'necunoscut', accesArma:'nu', utilizareArma:'nu', persoane:'nu', baricadat:'nu', acces:'facil', subiect:'fix', multime:'nu', perimetru:'controlat', evolutie:'stabil', comunicare:'buna', urgenta:'redusa', mediu:[]};
+
+const roleData = {
+  "Șef acțiune":["Stabilește măsura juridică.","Aprobă cursul acțiunii și planul de intervenție.","Coordonează toate structurile implicate."],
+  "Șef intervenție":["Propune strategia de intervenție.","Stabilește direcția principală de pericol.","Conduce tactic intervenția în teren."],
+  "Negociere":["Stabilește și menține contactul.","Caută conformarea voluntară a subiectului.","Poate sprijini tactic intervenția prin fixarea atenției subiectului."],
+  "Asalt de urgență":["Se activează la condiții critice.","Intervine pe direcția principală de pericol.","Neutralizează pericolul și securizează zona."],
+  "Asalt planificat":["Se decide când negocierea nu duce la conformare voluntară.","Execută la moment ales tactic.","Pentru tactic: un binom pentru fiecare cameră mare și un binom de rezervă."],
+  "Observare / lunetiști":["Monitorizează permanent situația.","Raportează schimbările critice în timp real.","Intervine condiționat, dacă există temei și posibilitate reală."],
+  "Breaching":["Asigură acces pentru asalt.","Are cale principală și cale secundară.","Se sincronizează cu asaltul."],
+  "Ordine publică":["Stabilește și menține perimetrul.","Dirijează traficul și controlează accesul.","Colectează, transmite și consemnează informații."],
+  "ISU":["Răspunde pentru planurile de salvare, evacuare și stingere incendiu.","Gestionează riscul de incendiu / explozie.","Preia victimele și componenta de salvare complexă."],
+  "Forțe specializate":["Intervin pe mediul specific: înălțime, apă, CBRN(e), exploziv.","Asigură suport specializat intervenției principale.","Sunt coordonate de șeful acțiunii."]
+};
+
+function initDefaults(){
+  Object.keys(defaults).forEach(group => {
+    if(group === 'mediu') return;
+    state[group] = defaults[group];
+    document.querySelectorAll('[data-group="' + group + '"] .btn, .btn[data-group="' + group + '"]').forEach(b => b.classList.remove('active'));
+    const btns = Array.from(document.querySelectorAll('[data-group="' + group + '"] .btn, .btn[data-group="' + group + '"]'));
+    const target = btns.find(b => b.dataset.value === defaults[group]);
+    if(target) target.classList.add('active');
+  });
+  state.mediu = [];
+  document.querySelectorAll('.btn.multi').forEach(btn => btn.classList.remove('active'));
+  toggleConditionalFields();
+}
+function toggleConditionalFields(){ document.getElementById('tipArmaWrap').classList.toggle('hidden', state.arma === 'nu'); }
+function bindButtons(){
+  document.querySelectorAll('.btn-grid').forEach(groupEl => {
+    const group = groupEl.dataset.group;
+    const isMulti = group === 'mediu';
+    groupEl.querySelectorAll('.btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const value = btn.dataset.value;
+        if(isMulti){
+          btn.classList.toggle('active');
+          state.mediu = Array.from(document.querySelectorAll('.btn.multi.active')).map(b => b.dataset.value);
+        } else {
+          groupEl.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          state[group] = value;
+        }
+        if(group === 'arma'){ if(value === 'nu') state.tipArma = 'necunoscut'; toggleConditionalFields(); }
+      });
+    });
+  });
+}
+
+function determineCompetence(){
+  const suicidPur = (state.suicidar === 'declarat' || state.suicidar === 'iminent') && state.agresiv === 'nu' && state.persoane === 'nu' && state.arma === 'nu' && state.mediu.length === 0;
+  return suicidPur ? 'ISU' : 'POLIȚIE';
+}
+
+function calcRisk(){
+  const lipsaControl = state.perimetru === 'pierdut' ||
+    (state.subiect === 'deplasare' && (state.multime === 'prezenta' || state.multime === 'crestere')) ||
+    (state.subiect === 'deplasare' && (state.arma === 'confirmat' || state.utilizareArma === 'ameninta' || state.utilizareArma === 'folosita')) ||
+    state.actIminent === 'da' || state.persoane === 'ostatici' || state.utilizareArma === 'folosita' ||
+    (state.persoane === 'vulnerabile' && state.agresiv === 'fizic');
+
+  const pericolGrav = state.agresiv === 'fizic' || state.suicidar === 'iminent' || (state.arma === 'confirmat' && state.accesArma === 'imediat') || state.utilizareArma === 'ameninta';
+
+  let risc = 'MEDIU';
+  if(lipsaControl) risc = 'MAXIM';
+  else if(pericolGrav) risc = 'RIDICAT';
+  else risc = 'MEDIU';
+
+  const postura = risc === 'MAXIM' ? 'ACȚIUNE' : (risc === 'RIDICAT' ? 'DISPOZITIV ACTIV' : 'LA FAȚA LOCULUI');
+  return {risc, postura};
+}
+
+function buildAlert(risc){
+  if(risc === 'MAXIM' && state.subiect === 'deplasare' && (state.multime === 'prezenta' || state.multime === 'crestere')) return 'ACCES PUBLIC NECONTROLAT';
+  if(state.actIminent === 'da') return 'ACT IMINENT (GEST GRAV)';
+  if(state.persoane === 'ostatici') return 'OSTATICI';
+  if(state.utilizareArma === 'folosita') return 'ARMĂ FOLOSITĂ';
+  if(state.perimetru === 'pierdut') return 'PERIMETRU PIERDUT';
+  if(state.mediu.includes('explozie')) return 'RISC DE EXPLOZIE';
+  if(state.mediu.includes('incendiu')) return 'RISC DE INCENDIU';
+  if(state.persoane === 'vulnerabile' && state.agresiv === 'fizic') return 'PERSOANE VULNERABILE ÎN PERICOL';
+  return risc === 'RIDICAT' ? 'PERICOL GRAV, DAR CONTROLAT' : 'FĂRĂ PERICOL GRAV IMEDIAT';
+}
+
+function recommendedForces(risc, competenta){
+  const forte = ['Șef acțiune','Șef intervenție'];
+  const masuri = [];
+  if(risc === 'MEDIU'){
+    forte.push('Ordine publică');
+    if(state.comunicare !== 'pierduta') forte.push('Negociere');
+    masuri.push('Control situație','Colectare date','Prevenire escaladare');
+  }
+  if(risc === 'RIDICAT'){
+    forte.push('Ordine publică','Negociere','Asalt de urgență','Observare / lunetiști');
+    masuri.push('Menținere control','Pregătire intervenție','Direcția principală de pericol');
+  }
+  if(risc === 'MAXIM'){
+    forte.push('Ordine publică','Negociere','Asalt de urgență','Asalt planificat','Observare / lunetiști','Breaching');
+    masuri.push('Recâștigare control','Evacuare / blocare / protecție','Supradimensionare resurse');
+  }
+  if(competenta === 'ISU' || state.mediu.includes('incendiu') || state.mediu.includes('explozie') || state.persoane === 'victime') forte.push('ISU');
+  if(state.mediu.includes('inaltime') || state.mediu.includes('apa') || state.mediu.includes('cbrne') || state.mediu.includes('explozie')) forte.push('Forțe specializate');
+  return {forte:[...new Set(forte)], masuri:[...new Set(masuri)]};
+}
+
+function saveHistory(competenta, risc, postura, alerta){
+  const entry = {data:new Date().toLocaleString('ro-RO'), competenta, risc, postura, alerta, stare:state.stare, arma:state.arma, persoane:state.persoane};
+  const list = JSON.parse(localStorage.getItem('vector112_istoric_final') || '[]');
+  list.push(entry);
+  localStorage.setItem('vector112_istoric_final', JSON.stringify(list));
+}
+function renderHistory(){
+  const wrap = document.getElementById('istoricWrap');
+  const list = JSON.parse(localStorage.getItem('vector112_istoric_final') || '[]');
+  if(!list.length){ wrap.innerHTML = 'Nu există intervenții salvate.'; return; }
+  wrap.innerHTML = list.slice().reverse().map(item => '<div class="history-row"><div><b>' + item.risc + '</b> · ' + item.postura + ' · ' + item.competenta + '</div><div>' + item.data + '</div><div class="small">' + item.alerta + '</div></div>').join('');
+}
+
+function renderRoles(risc, postura, activeForces){
+  const tabsWrap = document.getElementById('roleTabs');
+  const panelsWrap = document.getElementById('rolePanels');
+  tabsWrap.innerHTML = ''; panelsWrap.innerHTML = '';
+  const roles = Object.keys(roleData).filter(role => activeForces.includes(role));
+  if(!roles.length){ tabsWrap.innerHTML = '<div class="small">Nu există roluri active de afișat.</div>'; return; }
+  roles.forEach((role, idx) => {
+    const tab = document.createElement('button');
+    tab.className = 'role-tab' + (idx === 0 ? ' active' : '');
+    tab.textContent = role;
+    const panel = document.createElement('div');
+    panel.className = 'role-panel' + (idx === 0 ? ' active' : '');
+    panel.innerHTML = '<div class="badge">RISC ' + risc + '</div><div class="badge">POSTURĂ ' + postura + '</div><div style="height:8px"></div><div class="list">' + roleData[role].map(x => '<div class="item">' + x + '</div>').join('') + '</div>';
+    tab.addEventListener('click', function(){
+      document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.role-panel').forEach(p => p.classList.remove('active'));
+      tab.classList.add('active'); panel.classList.add('active');
+    });
+    tabsWrap.appendChild(tab); panelsWrap.appendChild(panel);
+  });
+}
+
+function renderRisk(){
+  const competenta = determineCompetence();
+  const rr = calcRisk();
+  const alerta = buildAlert(rr.risc);
+  const rec = recommendedForces(rr.risc, competenta);
+
+  const compEl = document.getElementById('competentaValue');
+  compEl.textContent = 'COMPETENȚĂ: ' + competenta;
+  compEl.className = 'result-big ' + (competenta === 'POLIȚIE' ? 'ridicat' : 'scazut');
+
+  const riskEl = document.getElementById('riskValue');
+  riskEl.textContent = 'RISC: ' + rr.risc;
+  riskEl.className = 'result-big ' + rr.risc.toLowerCase();
+
+  document.getElementById('posturaValue').textContent = 'POSTURĂ: ' + rr.postura;
+  document.getElementById('alertValue').textContent = alerta;
+
+  const forteWrap = document.getElementById('forteList');
+  forteWrap.innerHTML = '';
+  rec.forte.forEach(f => {
+    const div = document.createElement('div');
+    div.className = 'item ' + ((f.indexOf('Asalt') !== -1 || f.indexOf('Breaching') !== -1 || f.indexOf('Observare') !== -1) ? 'strong' : 'active');
+    div.textContent = f;
+    forteWrap.appendChild(div);
+  });
+
+  const masuriWrap = document.getElementById('masuriList');
+  masuriWrap.innerHTML = '';
+  rec.masuri.forEach(m => {
+    const div = document.createElement('div');
+    div.className = 'item';
+    div.textContent = m;
+    masuriWrap.appendChild(div);
+  });
+
+  saveHistory(competenta, rr.risc, rr.postura, alerta);
+  renderHistory();
+  renderRoles(rr.risc, rr.postura, rec.forte);
+}
+
+function switchScreen(name){
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById('screen-' + name).classList.add('active');
+  document.querySelector('.nav button[data-screen="' + name + '"]').classList.add('active');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+document.querySelectorAll('.nav button').forEach(btn => btn.addEventListener('click', function(){ switchScreen(btn.dataset.screen); }));
+document.getElementById('genereazaBtn').addEventListener('click', function(){ renderRisk(); switchScreen('risc'); });
+document.getElementById('resetBtn').addEventListener('click', function(){ initDefaults(); switchScreen('evaluare'); });
+document.getElementById('stergeIstoricBtn').addEventListener('click', function(){ localStorage.removeItem('vector112_istoric_final'); renderHistory(); });
+
+bindButtons();
+initDefaults();
+renderHistory();
+renderRoles('-', '-', []);
+</script>
+</body>
+</html>
