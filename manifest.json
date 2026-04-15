@@ -1,0 +1,26 @@
+{
+  "name": "Planificare Ture",
+  "short_name": "PlanTure",
+  "description": "Aplicatie pentru planificarea turelor de lucru",
+  "start_url": "./planificare_ture_mobil_claude.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0f172a",
+  "theme_color": "#22c55e",
+  "lang": "ro",
+  "icons": [
+    {
+      "src": "icon-192-1.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512-1.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
