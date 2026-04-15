@@ -692,9 +692,23 @@
     // Inregistrare Service Worker (PWA)
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js')
-          .then(reg => console.log('SW inregistrat:', reg.scope))
-          .catch(err => console.log('SW eroare:', err));
+        navigator.serviceWorker.register('./sw.js').then(reg => {
+          // Verifica update la fiecare incarcare
+          reg.update();
+          reg.addEventListener('updatefound', () => {
+            const newSW = reg.installing;
+            newSW.addEventListener('statechange', () => {
+              if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
+                // Noua versiune gasita — activeaz-o imediat
+                newSW.postMessage('skipWaiting');
+              }
+            });
+          });
+        });
+        // Cand noul SW preia controlul — reincarca pagina automat
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+          window.location.reload();
+        });
       });
     }
 
