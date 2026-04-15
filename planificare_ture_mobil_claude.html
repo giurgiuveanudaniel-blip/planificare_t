@@ -146,6 +146,7 @@
       <button class="btn-secondary" id="showCard3Btn" type="button">Card 3 - Activități</button>
       <button class="btn-info" id="printBtn" type="button">Tipărește / Salvează PDF</button>
       <button class="btn-danger" id="resetBtn" type="button">Resetează</button>
+      <button class="btn-primary hidden" id="installBtn" type="button">⬇ Instalează aplicația</button>
     </div>
   </div>
 
@@ -647,6 +648,25 @@
           .catch(err => console.log('SW eroare:', err));
       });
     }
+
+    // Buton instalare PWA
+    let deferredPrompt;
+    const installBtn = document.getElementById('installBtn');
+    window.addEventListener('beforeinstallprompt', e => {
+      e.preventDefault();
+      deferredPrompt = e;
+      installBtn.classList.remove('hidden');
+    });
+    installBtn.addEventListener('click', async () => {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') installBtn.classList.add('hidden');
+      deferredPrompt = null;
+    });
+    window.addEventListener('appinstalled', () => {
+      installBtn.classList.add('hidden');
+    });
   </script>
 </body>
 </html>
