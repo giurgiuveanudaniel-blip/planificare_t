@@ -200,7 +200,7 @@
         </div>
         <div>
           <label for="nrAutos">Număr autospeciale</label>
-          <input id="nrAutos" type="number" min="0" max="20" value="5">
+          <input id="nrAutos" type="number" min="0" max="25" value="5">
         </div>
       </div>
 
@@ -386,7 +386,7 @@
     }
 
     function buildAutosTable(){
-      const count = Math.max(0, Math.min(20, Number(document.getElementById('nrAutos').value) || 0));
+      const count = Math.max(0, Math.min(25, Number(document.getElementById('nrAutos').value) || 0));
       autosBody.innerHTML = '';
       for(let i=1;i<=count;i++){
         if(!autos[i]) autos[i] = {nr:'', team:''};
