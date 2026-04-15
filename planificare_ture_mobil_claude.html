@@ -120,9 +120,10 @@
     .team-block{padding:8px;margin-bottom:8px}
     .team-head{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:8px}
     .team-members{padding:8px;border-radius:10px;background:#0f172a;border:1px solid var(--soft);font-size:13px;margin-bottom:8px}
-    .activity-row{display:grid;grid-template-columns:92px 1fr 64px 64px 64px auto;gap:6px;align-items:center;padding:6px;border-radius:10px;background:rgba(15,23,42,.72);margin-bottom:6px}
+    .activity-row{display:grid;grid-template-columns:80px minmax(0,1fr) 58px 58px minmax(0,1fr) 62px;gap:4px;align-items:center;padding:6px;border-radius:10px;background:rgba(15,23,42,.72);margin-bottom:6px;min-width:0}
+    .activity-row>*{min-width:0;overflow:hidden}
     .activity-row .mini{min-height:34px;font-size:12px;padding:6px}
-    .activity-header{display:grid;grid-template-columns:92px 1fr 64px 64px 64px auto;gap:6px;font-size:11px;color:var(--muted);padding:0 6px 4px}
+    .activity-header{display:grid;grid-template-columns:80px minmax(0,1fr) 58px 58px minmax(0,1fr) 62px;gap:4px;font-size:11px;color:var(--muted);padding:0 6px 4px}
     .status-grid{display:grid;gap:8px}
     .status-s{background:var(--amber)}
     .status-o{background:var(--red)}
@@ -274,7 +275,7 @@
       </div>
       <div class="team-members"></div>
       <div class="activity-header">
-        <div>Echipă/auto</div><div>Activitate</div><div>Începe</div><div>Termină</div><div>Mis.</div><div></div>
+        <div>Echipă/auto</div><div>Activitate</div><div>Ora începere</div><div>Ora terminare</div><div>Mis./Descr.</div><div></div>
       </div>
       <div class="activity-list"></div>
     </div>
@@ -294,8 +295,8 @@
       </select>
       <input class="mini act-start" type="number" min="0" max="23" placeholder="08">
       <input class="mini act-end" type="number" min="0" max="23" placeholder="12">
-      <input class="mini act-extra" type="text" maxlength="4" placeholder="abcd">
-      <button class="btn-danger remove-activity-btn" type="button">Șterge</button>
+      <input class="mini act-extra" type="text" maxlength="30" placeholder="Mis./Descr." title="Misiune / Descriere activitate">
+      <button class="btn-danger remove-activity-btn" type="button" title="Șterge activitate">✕</button>
     </div>
   </template>
 
