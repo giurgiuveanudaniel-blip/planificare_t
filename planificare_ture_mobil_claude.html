@@ -21,8 +21,20 @@
     *{box-sizing:border-box}
     body{margin:0;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(180deg,#0b1220 0%,#111827 100%);color:var(--text)}
     .wrap{max-width:1180px;margin:0 auto;padding:10px 8px 28px}
-    .topbar{position:sticky;top:0;z-index:50;background:rgba(15,23,42,.95);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);padding:8px}
-    .topbar-inner{max-width:1180px;margin:0 auto;display:flex;gap:6px;flex-wrap:wrap}
+    .topbar{position:sticky;top:0;z-index:50;background:rgba(15,23,42,.97);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);padding:6px 8px}
+    .topbar-inner{max-width:1180px;margin:0 auto;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+    .topbar-title{font-size:17px;font-weight:900;color:var(--text);white-space:nowrap;margin-right:4px;letter-spacing:.01em}
+    .topbar-btns{display:flex;gap:6px;flex:1;flex-wrap:wrap}
+    .btn-nav{min-height:52px;padding:10px 18px;font-size:14px;font-weight:800;border-radius:12px;border:none;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;transition:filter .1s}
+    .btn-nav:active{filter:brightness(0.85)}
+    .btn-alocare{background:#3b82f6;color:#fff}
+    .btn-planificare{background:#8b5cf6;color:#fff}
+    .btn-activitati{background:#f59e0b;color:#1c1008}
+    .btn-pdf{background:#14b8a6;color:#fff}
+    .btn-save{background:#22c55e;color:#052e16}
+    .btn-install{background:#38bdf8;color:#082f49}
+    .btn-close{min-width:48px;min-height:48px;padding:0;background:#ef4444;color:#fff;border:none;border-radius:50%;font-size:20px;font-weight:900;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:filter .1s}
+    .btn-close:active{filter:brightness(0.85)}
     .panel,.card,.team-block,.status-block{background:rgba(31,41,55,.96);border:1px solid var(--line);border-radius:14px;box-shadow:0 8px 20px rgba(0,0,0,.18)}
     .panel,.card{padding:10px;margin-bottom:10px}
     h1,h2,h3,h4{margin:0 0 8px;line-height:1.15}
@@ -36,17 +48,19 @@
 
     /* ===== OPTIMIZARE MOBIL ===== */
     @media (max-width:600px){
-      /* Topbar — scroll orizontal, fără wrap */
-      .topbar{padding:6px 6px 0}
-      .topbar-inner{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:6px;gap:5px;scrollbar-width:none}
-      .topbar-inner::-webkit-scrollbar{display:none}
-      .topbar-inner button{flex-shrink:0;white-space:nowrap;font-size:11px;padding:6px 9px;min-height:36px}
+      /* Topbar */
+      .topbar{padding:6px 6px 6px}
+      .topbar-inner{flex-wrap:wrap;gap:5px}
+      .topbar-title{font-size:15px;width:100%;margin-bottom:2px}
+      .topbar-btns{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;gap:5px;scrollbar-width:none;padding-bottom:2px}
+      .topbar-btns::-webkit-scrollbar{display:none}
+      .btn-nav{flex-shrink:0;white-space:nowrap;font-size:13px;padding:10px 14px;min-height:48px}
 
-      /* Touch targets mai mari */
-      button{min-height:44px;padding:10px 12px}
-      input,select,textarea{min-height:44px}
+      /* Touch targets */
+      button{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+      input,select,textarea{min-height:48px}
 
-      /* Fix iOS zoom (< 16px cauzează zoom automat) */
+      /* Fix iOS zoom */
       input,select,textarea{font-size:16px!important}
       .plan-select{font-size:14px!important;padding:6px 3px}
 
@@ -141,20 +155,20 @@
 <body>
   <div class="topbar">
     <div class="topbar-inner">
-      <button class="btn-secondary" id="showCard1Btn" type="button">Card 1 - Alocare</button>
-      <button class="btn-secondary" id="showCard2Btn" type="button">Card 2 - Planificare</button>
-      <button class="btn-secondary" id="showCard3Btn" type="button">Card 3 - Activități</button>
-      <button class="btn-info" id="printBtn" type="button">Tipărește / Salvează PDF</button>
-      <button class="btn-danger" id="resetBtn" type="button">Resetează</button>
-      <button class="btn-primary hidden" id="installBtn" type="button">⬇ Instalează aplicația</button>
+      <span class="topbar-title">Planificare Ture</span>
+      <div class="topbar-btns">
+        <button class="btn-nav btn-alocare" id="showCard1Btn" type="button">Alocare</button>
+        <button class="btn-nav btn-planificare" id="showCard2Btn" type="button">Planificare</button>
+        <button class="btn-nav btn-activitati" id="showCard3Btn" type="button">Activități</button>
+        <button class="btn-nav btn-pdf" id="printBtn" type="button">PDF</button>
+        <button class="btn-nav btn-save" id="saveBtn" type="button">💾 Salvează</button>
+        <button class="btn-nav btn-install hidden" id="installBtn" type="button">⬇ Instalează</button>
+      </div>
+      <button class="btn-close" id="closeBtn" type="button" title="Închide aplicația">✕</button>
     </div>
   </div>
 
   <div class="wrap">
-    <div class="panel">
-      <h1>Planificare ture</h1>
-      <div class="sub">Varianta bazată pe primul HTML mare, cu modificările cerute: auto alocat la echipă, coloană sticky la planificare, activitate + oră început + oră sfârșit pe același rând.</div>
-    </div>
 
     <div class="card" id="card1">
       <div class="card-title">
@@ -613,31 +627,54 @@
       renderStatusBlock('1I', 'status-1i', getPeopleForCode(date,'1I'));
     }
 
-    function resetAll(){
-      if(!confirm('Resetezi tot formularul?')) return;
-      people.length = 0;
-      Object.keys(planning).forEach(k => delete planning[k]);
-      Object.keys(teamActivities).forEach(k => delete teamActivities[k]);
-      Object.keys(autos).forEach(k => delete autos[k]);
-      document.getElementById('personNumber').value = '';
-      document.getElementById('personLastName').value = '';
-      document.getElementById('personFirstName').value = '';
-      initDefaults();
-      showCard(1);
+    function saveAll(){
+      localStorage.setItem('pt_people', JSON.stringify(people));
+      localStorage.setItem('pt_planning', JSON.stringify(planning));
+      localStorage.setItem('pt_teamActivities', JSON.stringify(teamActivities));
+      localStorage.setItem('pt_autos', JSON.stringify(autos));
+      localStorage.setItem('pt_detasament', document.getElementById('detasament').value);
+      localStorage.setItem('pt_dataReferinta', document.getElementById('dataReferinta').value);
+      localStorage.setItem('pt_nrAutos', document.getElementById('nrAutos').value);
+      const btn = document.getElementById('saveBtn');
+      btn.textContent = '✓ Salvat!';
+      setTimeout(() => { btn.textContent = '💾 Salvează'; }, 1500);
+    }
+
+    function loadSaved(){
+      try {
+        const savedPeople = localStorage.getItem('pt_people');
+        if(savedPeople) { const arr = JSON.parse(savedPeople); arr.forEach(p => people.push(p)); }
+        const savedPlanning = localStorage.getItem('pt_planning');
+        if(savedPlanning) { Object.assign(planning, JSON.parse(savedPlanning)); }
+        const savedTA = localStorage.getItem('pt_teamActivities');
+        if(savedTA) { Object.assign(teamActivities, JSON.parse(savedTA)); }
+        const savedAutos = localStorage.getItem('pt_autos');
+        if(savedAutos) { Object.assign(autos, JSON.parse(savedAutos)); }
+        const det = localStorage.getItem('pt_detasament');
+        if(det) document.getElementById('detasament').value = det;
+        const dataRef = localStorage.getItem('pt_dataReferinta');
+        if(dataRef) document.getElementById('dataReferinta').value = dataRef;
+        const nrAut = localStorage.getItem('pt_nrAutos');
+        if(nrAut) document.getElementById('nrAutos').value = nrAut;
+        return !!savedPeople;
+      } catch(e) { return false; }
     }
 
     document.getElementById('showCard1Btn').addEventListener('click', () => showCard(1));
     document.getElementById('showCard2Btn').addEventListener('click', () => showCard(2));
     document.getElementById('showCard3Btn').addEventListener('click', () => showCard(3));
     document.getElementById('printBtn').addEventListener('click', () => window.print());
-    document.getElementById('resetBtn').addEventListener('click', resetAll);
+    document.getElementById('saveBtn').addEventListener('click', saveAll);
+    document.getElementById('closeBtn').addEventListener('click', () => window.close());
     document.getElementById('addPersonBtn').addEventListener('click', addPerson);
     document.getElementById('nrAutos').addEventListener('change', () => { buildAutosTable(); renderCard3(); });
     document.getElementById('dataReferinta').addEventListener('change', () => { buildPlanningTable(); buildActivityDateOptions(); renderCard3(); });
     document.getElementById('detasament').addEventListener('change', renderCard3);
     activityDateSelect.addEventListener('change', renderCard3);
 
+    const hasSaved = loadSaved();
     initDefaults();
+    if(hasSaved){ buildAutosTable(); buildPlanningTable(); buildActivityDateOptions(); renderCard3(); }
     showCard(1);
 
     // Inregistrare Service Worker (PWA)
