@@ -24,6 +24,7 @@
     .topbar{position:sticky;top:0;z-index:50;background:rgba(15,23,42,.97);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);padding:6px 8px}
     .topbar-inner{max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:6px}
     .topbar-row1{display:flex;align-items:center;justify-content:space-between;gap:8px}
+    .topbar-row1-actions{display:flex;align-items:center;gap:8px;flex-shrink:0}
     .topbar-title{font-size:19px;font-weight:900;color:var(--text);letter-spacing:.01em}
     .topbar-row2{display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:2px}
     .topbar-row2::-webkit-scrollbar{display:none}
@@ -160,7 +161,10 @@
     <div class="topbar-inner">
       <div class="topbar-row1">
         <span class="topbar-title">Planificare Ture</span>
-        <button class="btn-close" id="closeBtn" type="button" title="Închide aplicația">✕</button>
+        <div class="topbar-row1-actions">
+          <button class="btn-nav btn-save" id="saveBtn" type="button">💾 Salvează</button>
+          <button class="btn-close" id="closeBtn" type="button" title="Închide aplicația">✕</button>
+        </div>
       </div>
       <div class="topbar-row2">
         <div class="topbar-btns">
@@ -168,7 +172,6 @@
           <button class="btn-nav btn-planificare" id="showCard2Btn" type="button">Planificare</button>
           <button class="btn-nav btn-activitati" id="showCard3Btn" type="button">Activități</button>
           <button class="btn-nav btn-pdf" id="printBtn" type="button">PDF</button>
-          <button class="btn-nav btn-save" id="saveBtn" type="button">💾 Salvează</button>
           <button class="btn-nav btn-install hidden" id="installBtn" type="button">⬇ Instalează</button>
         </div>
       </div>
