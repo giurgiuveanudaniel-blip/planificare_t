@@ -3,7 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Planificare ture - versiune corectată</title>
+  <title>Planificare Ture</title>
+  <meta name="description" content="Aplicatie pentru planificarea turelor de lucru" />
+  <meta name="theme-color" content="#22c55e" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="PlanTure" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icon-192-1.png" />
   <style>
     :root{
       --bg:#0f172a; --panel:#111827; --card:#1f2937; --soft:#334155; --line:#475569;
@@ -629,6 +637,15 @@
 
     initDefaults();
     showCard(1);
+
+    // Inregistrare Service Worker (PWA)
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => console.log('SW inregistrat:', reg.scope))
+          .catch(err => console.log('SW eroare:', err));
+      });
+    }
   </script>
 </body>
 </html>
